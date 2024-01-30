@@ -17,12 +17,19 @@
  */
 void heapSort(Employee *A, int n)
 {
-	// TODO - BuildHeap on the heap
-
-	// TODO - while n > 0:
-	// TODO - swap A[n-1] with A[0], since A[0] is the smallest number.
-	// TODO - A[n-1] now sorted in place, so decrement n
-	// TODO - Heapify the elements from A[0] up to A[n-1] (which leaves the newly sorted element alone)
+	buildHeap(A, n);
+	//printf("Initial min heap:\n");
+	//printList(A, n);
+	for(int i = n - 1; i > 0; i--) {
+		//printf("Working on element %d\n", i);
+		swap(&A[0], &A[i]); // if the 0 and 1 elements were in order, this will, swap them anyways
+		//printf("After swapping:\n");
+		//printList(A, n);
+		heapify(A, 0, i - 1); // but then heapify considers the array to be of length 1, and so won't swap them back
+		//printList(A, n);
+	}
+	// therefore determine if the first 2 elements are out of order after finishing the sort, and swap if needed
+	if(A[0].salary < A[1].salary) swap(&A[0], &A[1]);
 }
 
 /**
@@ -35,7 +42,9 @@ void heapSort(Employee *A, int n)
  */
 void buildHeap(Employee *A, int n)
 {
-	// TODO - heapify() every element from A[n/2] down-to A[0]
+	for(int i = n/2; i >= 0; i--) {
+		heapify(A, i, n);
+	}
 }
 
 /**
@@ -47,16 +56,18 @@ void buildHeap(Employee *A, int n)
  * @param	n	Size of the heap
  */
 void heapify(Employee *A, int i, int n)
-{
-	// TODO - get index of left child of element i
-	// TODO - get index of right child of element i
+{	
+	if(i >= (n/2)) return; // current node is a leaf
+	int left = 2 * (i+1)-1;
+	int right = 2 * (i+1);
+	int smaller;
+	if(A[left].salary <= A[right].salary) smaller = left;
+	else smaller = right;
 
-	// TODO - determine which child has a smaller salary. We'll call the index of this
-	//		element: "smaller"
-
-	// TODO - recursively check if the salary at A[i] > the salary at A[smaller]. If it is, swap the two.
-	//			Then recursively heapify A[smaller].
-	// TODO - Continue recursion as long as i is within range AND either right_child and left_child are still within range.
+	if(A[smaller].salary < A[i].salary) {
+		swap(&A[i], &A[smaller]);
+		heapify(A, smaller, n);
+	}
 }
 
 /**
@@ -66,7 +77,9 @@ void heapify(Employee *A, int i, int n)
  */
 void swap(Employee *e1, Employee *e2)
 {
-	// TODO
+  Employee tmp = *e1;  // dereference x and store value in tmp
+  *e1 = *e2;
+  *e2 = tmp;
 }
 
 /**
@@ -76,5 +89,9 @@ void swap(Employee *e1, Employee *e2)
  */
 void printList(Employee *A, int n)
 {
-	// TODO
+	printf("[id=%s sal=%d]", A[0].name, A[0].salary);
+	for(int i = 1; i < n; i++) {
+		printf(", [id=%s sal=%d]", A[i].name, A[i].salary);
+	}
+	printf("\n");
 }
